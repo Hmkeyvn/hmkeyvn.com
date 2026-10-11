@@ -1,1142 +1,1063 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Link Cyberpunk Pro - Personal Hub</title>
-
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        cyber: {
-                            cyan: '#00f0ff',
-                            purple: '#7000ff',
-                            pink: '#ff007f',
-                            yellow: '#ffea00',
-                            dark: '#05050d',
-                            card: 'rgba(12, 12, 26, 0.75)'
-                        }
-                    },
-                    animation: {
-                        'spin-slow': 'spin 15s linear infinite',
-                        'pulse-glow': 'pulseGlow 2s infinite alternate',
-                        'equalizer': 'equalizer 1s ease-in-out infinite alternate',
-                        'float': 'float 4s ease-in-out infinite'
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%': { boxShadow: '0 0 15px rgba(0,240,255,0.4), 0 0 30px rgba(112,0,255,0.3)' },
-                            '100%': { boxShadow: '0 0 35px rgba(0,240,255,0.8), 0 0 70px rgba(255,0,127,0.6)' }
-                        },
-                        equalizer: {
-                            '0%': { height: '3px' },
-                            '100%': { height: '18px' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Google Fonts & FontAwesome Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <!-- Khóa phóng to thu nhỏ trên điện thoại -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bio Link - Cyberpunk Pro</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --border-color: rgba(0, 243, 255, 0.3);
+            --primary-color: #00f3ff;
+            --secondary-color: #bc13fe;
+            --text-color: #ffffff;
+            --text-muted: #9ca3af;
+            --btn-bg: rgba(0, 243, 255, 0.1);
+            --btn-hover: rgba(0, 243, 255, 0.25);
+            --glow-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            --blur-strength: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation; /* Ngăn chặn double-tap zoom trên mobile */
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #030308;
-            color: #f1f5f9;
-            overflow-x: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
         }
-        .font-mono-cyber {
-            font-family: 'Share Tech Mono', monospace;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #080811;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #232342;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00f0ff;
-        }
-        .glass-card {
-            background: rgba(12, 12, 28, 0.72);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-modal {
-            background: rgba(8, 8, 20, 0.94);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-        }
-        .neon-ring {
-            position: absolute;
-            inset: -6px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, #00f0ff, #7000ff, #ff007f, #00f0ff);
-            animation: spin 6s linear infinite;
-            filter: blur(5px);
-        }
-        .video-bg-container iframe, .video-bg-container video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+
+        /* Video Background */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
-            min-width: 177.77vh;
-            min-height: 56.25vw;
-            transform: translate(-50%, -50%);
             object-fit: cover;
+            z-index: -2;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Overlay */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(5, 7, 12, 0.65);
+            z-index: -1;
+            backdrop-filter: blur(var(--blur-strength));
+            -webkit-backdrop-filter: blur(var(--blur-strength));
+        }
+
+        /* Canvas Particle */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
             pointer-events: none;
         }
-        .vinyl-record {
-            transition: transform 0.5s ease-out;
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            min-height: 100vh;
+            justify-content: center;
         }
-        .playing .vinyl-record {
-            animation: spin 4s linear infinite;
+
+        /* Profile Card */
+        .profile-card {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), var(--glow-shadow);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            animation: fadeIn 0.8s ease-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Top Action Buttons */
+        .top-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        /* Avatar */
+        .avatar-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+            100% { box-shadow: 0 0 25px var(--secondary-color); }
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, var(--text-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-bio {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+
+        /* Music Player Widget */
+        .music-widget {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 12px;
+        }
+
+        .music-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .vinyl {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #111;
+            border: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .vinyl.playing {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .vinyl::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .music-title {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Link List */
+        .link-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .link-item {
+            width: 100%;
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-item i:first-child {
+            font-size: 18px;
+            margin-right: 12px;
+            color: var(--primary-color);
+        }
+
+        .link-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .link-item:hover {
+            background: var(--btn-hover);
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 243, 255, 0.25);
+        }
+
+        /* Donate Button & Modal */
+        .donate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(188, 19, 254, 0.2));
+            border: 1px solid var(--secondary-color);
+            border-radius: 14px;
+            padding: 14px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+        }
+
+        .donate-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.4), rgba(188, 19, 254, 0.4));
+            box-shadow: 0 0 25px var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close-modal:hover { color: #fff; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px var(--primary-color);
+            filter: brightness(1.1);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .settings-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+
         .tab-btn.active {
-            background: rgba(0, 240, 255, 0.15);
-            color: #00f0ff;
-            border-color: rgba(0, 240, 255, 0.5);
+            background: var(--primary-color);
+            color: #000;
+            font-weight: 600;
         }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        .qr-preview {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 16px auto;
+            border-radius: 12px;
+            border: 2px solid var(--secondary-color);
+            object-fit: cover;
+            background: #fff;
+            display: block;
+        }
+
+        .bank-info {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .auth-switch span {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-switch span:hover { text-decoration: underline; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="relative flex flex-col justify-between items-center px-4 py-6 antialiased selection:bg-cyan-500 selection:text-black">
+<body>
 
-    <div id="bg-wrapper" class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <!-- Dynamic Dark Overlay Mask -->
-        <div id="bg-overlay" class="absolute inset-0 bg-slate-950/75 z-10 transition-all duration-300"></div>
+    <!-- Video Nền -->
+    <video id="bg-video" autoplay muted loop playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-31910-large.mp4" type="video/mp4">
+    </video>
+    <div class="bg-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
 
-        <!-- Video Background Container (Upload / MP4 URL / YouTube) -->
-        <div id="video-bg-holder" class="video-bg-container hidden"></div>
-
-        <!-- Static Image BG Holder -->
-        <div id="image-bg-holder" class="absolute inset-0 bg-cover bg-center transition-all duration-700 hidden"></div>
-
-        <!-- Particles Canvas -->
-        <canvas id="particles-canvas" class="absolute inset-0 w-full h-full z-0"></canvas>
-    </div>
-
-    <header class="relative z-30 w-full max-w-xl mx-auto flex items-center justify-between py-2">
-        <!-- Music Track Badge -->
-        <div id="music-indicator" class="flex items-center gap-3 px-3.5 py-1.5 rounded-full glass-card border border-cyan-500/30 text-xs shadow-lg">
-            <div id="vinyl-disc" class="w-6 h-6 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center relative overflow-hidden vinyl-record shadow-inner">
-                <div class="w-2 h-2 rounded-full bg-cyan-400"></div>
-            </div>
-            <div class="flex flex-col">
-                <span id="current-song-title" class="truncate max-w-[130px] sm:max-w-[180px] font-semibold text-slate-200">Đang dừng nhạc</span>
-                <span class="text-[10px] text-slate-400 font-mono-cyber">CYBER AUDIO</span>
-            </div>
-        </div>
-
-        <!-- Action Icon Buttons -->
-        <div class="flex items-center gap-2">
-            <button id="toggle-music-btn" title="Bật/Tắt Nhạc" class="p-2.5 rounded-full glass-card hover:bg-slate-800 text-pink-400 hover:text-pink-300 border border-pink-500/30 transition-all hover:scale-105 active:scale-95 shadow-lg">
-                <i class="fa-solid fa-music text-sm" id="music-btn-icon"></i>
-            </button>
-            <button id="share-btn" title="Sao chép trang" class="p-2.5 rounded-full glass-card hover:bg-slate-800 text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 transition-all hover:scale-105 active:scale-95 shadow-lg">
-                <i class="fa-solid fa-share-nodes text-sm"></i>
-            </button>
-            <button id="open-settings-btn" title="Quản lý Bio & Giao diện" class="p-2.5 rounded-full glass-card hover:bg-slate-800 text-purple-400 hover:text-purple-300 border border-purple-500/30 transition-all hover:scale-105 active:scale-95 shadow-lg relative">
-                <i class="fa-solid fa-gear text-sm"></i>
-                <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-                </span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <main class="relative z-20 w-full max-w-xl mx-auto flex flex-col items-center my-auto py-6 space-y-6">
-
-        <!-- Avatar Container -->
-        <div class="relative group my-2">
-            <div id="avatar-neon-ring" class="neon-ring opacity-80 group-hover:opacity-100 transition-opacity"></div>
-            <div class="relative w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-white/20 shadow-2xl bg-slate-900">
-                <img id="profile-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" alt="Avatar" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/150x150/080811/00f0ff?text=Avatar'">
-            </div>
-            <div class="absolute bottom-1 right-1 bg-cyan-400 text-slate-950 p-1.5 rounded-full shadow-lg border-2 border-slate-900 text-xs font-bold" title="Verified Creator">
-                <i class="fa-solid fa-check"></i>
-            </div>
-        </div>
-
-        <!-- Profile Information -->
-        <div class="text-center space-y-2 px-2">
-            <h1 id="profile-name" class="text-2xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-300 to-pink-400">
-                HMKEY (Phùng Văn Cường)
-            </h1>
-            <p id="profile-bio" class="text-slate-300 text-xs md:text-sm max-w-md mx-auto leading-relaxed">
-                Developer & Content Creator. Đam mê thiết kế giao diện Cyberpunk & Âm nhạc.
-            </p>
-
-            <!-- Skill Badges -->
-            <div id="profile-tags" class="flex flex-wrap justify-center gap-2 pt-2"></div>
-        </div>
-
-        <!-- Donate Card -->
-        <div class="w-full glass-card rounded-2xl p-4 md:p-5 border border-purple-500/20 shadow-2xl relative overflow-hidden group">
-            <div class="absolute -right-10 -bottom-10 w-28 h-28 bg-pink-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all duration-500"></div>
-
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2.5">
-                    <span class="p-2 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-500/20">
-                        <i class="fa-solid fa-heart text-base animate-pulse"></i>
-                    </span>
-                    <div>
-                        <h2 class="text-sm font-bold text-slate-100">Ủng hộ tôi (Donate)</h2>
-                        <p class="text-[11px] text-slate-400">Chuyển khoản ủng hộ sáng tạo nội dung</p>
-                    </div>
-                </div>
-                <button id="open-donate-modal" class="px-3 py-1.5 text-xs font-bold bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white rounded-xl shadow-lg transition-all duration-200 flex items-center gap-1.5">
-                    <i class="fa-solid fa-qrcode"></i> Mã QR
-                </button>
-            </div>
-
-            <div class="bg-slate-950/70 rounded-xl p-3 border border-slate-800/80 space-y-2">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Ngân hàng:</span>
-                    <span id="bank-name-display" class="font-bold text-cyan-400">MB BANK</span>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Chủ tài khoản:</span>
-                    <span id="bank-owner-display" class="font-semibold text-slate-200 uppercase">PHUNG VAN CUONG</span>
-                </div>
-                <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-lg border border-slate-800">
-                    <span id="bank-stk-display" class="font-mono-cyber text-sm font-bold text-pink-400 tracking-wider">0987654321</span>
-                    <button id="copy-stk-btn" class="px-2.5 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded border border-slate-700 transition flex items-center gap-1">
-                        <i class="fa-regular fa-copy"></i> Copy STK
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Links Container -->
-        <div class="w-full space-y-3" id="social-links-container">
-            <!-- Dynamic Social / Custom Links rendered via JavaScript -->
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="relative z-20 text-center py-3 text-xs text-slate-500">
-        <p>© <span id="year"></span> <span id="footer-name">HMKEY</span>. All Rights Reserved.</p>
-    </footer>
-
-    <!-- Audio Player Element -->
-    <audio id="audio-player" class="hidden" loop></audio>
-
-    <div id="donate-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden transition-opacity duration-300 opacity-0">
-        <div class="glass-modal w-full max-w-sm rounded-2xl p-6 relative shadow-2xl transform transition-transform duration-300 scale-95 border border-pink-500/30">
-            <button id="close-donate-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <div class="text-center space-y-4">
-                <div class="inline-flex p-3 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white shadow-lg">
-                    <i class="fa-solid fa-qrcode text-2xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-white">Quét Mã QR Chuyển Khoản</h3>
-                    <p class="text-xs text-slate-400">Ủng hộ nhanh chóng qua VietQR hoặc Ví Điện Tử</p>
-                </div>
-
-                <div class="relative w-56 h-56 mx-auto bg-white p-2.5 rounded-xl shadow-inner border-2 border-cyan-400/50 flex items-center justify-center overflow-hidden">
-                    <img id="qr-code-img" src="" alt="Mã QR Donate" class="w-full h-full object-contain rounded-lg">
-                </div>
-
-                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-left text-xs space-y-1">
-                    <div class="flex justify-between"><span class="text-slate-400">Ngân hàng:</span> <span id="modal-bank-name" class="text-cyan-400 font-bold">MB Bank</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">Chủ TK:</span> <span id="modal-bank-owner" class="text-slate-200 font-semibold uppercase">PHUNG VAN CUONG</span></div>
-                    <div class="flex justify-between"><span class="text-slate-400">STK:</span> <span id="modal-bank-stk" class="text-pink-400 font-mono-cyber font-bold">0987654321</span></div>
-                </div>
-
-                <button id="modal-copy-stk" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2">
-                    <i class="fa-regular fa-copy"></i> Sao Chép Số Tài Khoản
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden transition-opacity duration-300 opacity-0 overflow-y-auto">
-        <div class="glass-modal w-full max-w-2xl rounded-2xl p-4 sm:p-6 relative shadow-2xl my-6 transform transition-transform duration-300 scale-95 border border-cyan-500/30 max-h-[92vh] flex flex-col">
+    <!-- Khung Giao Diện Chính -->
+    <div class="container">
+        <div class="profile-card">
             
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-cyan-400"></i>
-                    <h3 class="text-base font-bold text-white">Cài Đặt Hệ Thống Bio Link</h3>
-                </div>
-                <button id="close-settings-modal" class="text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+            <!-- Nút Thao Tác Góc Phải -->
+            <div class="top-actions">
+                <button class="icon-btn" id="auth-btn" title="Tài khoản & Đăng nhập"><i class="fa-solid fa-user"></i></button>
+                <button class="icon-btn hidden" id="settings-btn" title="Cài đặt trang"><i class="fa-solid fa-gear"></i></button>
             </div>
 
-            <!-- Tab Navigation Bar -->
-            <div class="flex gap-1 py-3 overflow-x-auto shrink-0 no-scrollbar border-b border-slate-800/80">
-                <button type="button" data-tab="profile" class="tab-btn active px-3 py-1.5 rounded-lg border border-transparent text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-user"></i> Hồ Sơ
-                </button>
-                <button type="button" data-tab="links" class="tab-btn px-3 py-1.5 rounded-lg border border-transparent text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-link"></i> Quản Lý Links
-                </button>
-                <button type="button" data-tab="background" class="tab-btn px-3 py-1.5 rounded-lg border border-transparent text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-film"></i> Video & Background
-                </button>
-                <button type="button" data-tab="music" class="tab-btn px-3 py-1.5 rounded-lg border border-transparent text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-music"></i> Nhạc Nền
-                </button>
-                <button type="button" data-tab="donate" class="tab-btn px-3 py-1.5 rounded-lg border border-transparent text-xs font-semibold text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="fa-solid fa-wallet"></i> Donate
-                </button>
+            <!-- Avatar -->
+            <div class="avatar-container">
+                <img id="profile-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop" alt="Avatar" class="avatar">
             </div>
 
-            <!-- Settings Form Content -->
-            <form id="settings-form" class="mt-3 overflow-y-auto space-y-4 text-xs pr-1 flex-1">
-                
-                <!-- TAB 1: PROFILE -->
-                <div id="tab-content-profile" class="tab-content space-y-3">
-                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 space-y-3">
-                        <h4 class="font-bold text-cyan-400 text-xs uppercase tracking-wider">Thông Tin Cá Nhân</h4>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Tên hiển thị:</label>
-                            <input type="text" id="input-name" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-cyan-500" placeholder="VD: HMKEY">
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Mô tả / Tiểu sử:</label>
-                            <textarea id="input-bio" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-cyan-500" placeholder="Viết giới thiệu ngắn..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Ảnh đại diện (Avatar):</label>
-                            <div class="flex gap-2 mb-2">
-                                <input type="url" id="input-avatar-url" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-cyan-500" placeholder="Dán link ảnh URL...">
-                                <label class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 cursor-pointer font-semibold shrink-0 flex items-center gap-1">
-                                    <i class="fa-solid fa-upload"></i> Upload Tệp
-                                    <input type="file" id="input-avatar-file" accept="image/*" class="hidden">
-                                </label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Thẻ kỹ năng (Phân cách bằng dấu phẩy):</label>
-                            <input type="text" id="input-tags" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-cyan-500" placeholder="Developer, Gamer, Content Creator">
-                        </div>
-                    </div>
+            <h1 id="profile-name" class="profile-name">Tên Hiển Thị</h1>
+            <p id="profile-bio" class="profile-bio">Chào mừng bạn đến với trang Bio Link của tôi! 🚀</p>
+
+            <!-- Trình phát nhạc -->
+            <div class="music-widget" id="music-widget">
+                <div class="music-info">
+                    <div class="vinyl" id="vinyl-disc"></div>
+                    <span class="music-title" id="music-title">Chưa có nhạc nền</span>
                 </div>
+                <button class="music-toggle" id="music-toggle-btn"><i class="fa-solid fa-play"></i></button>
+                <audio id="bg-audio" loop></audio>
+            </div>
 
-                <!-- TAB 2: LINKS MANAGEMENT -->
-                <div id="tab-content-links" class="tab-content space-y-3 hidden">
-                    <div class="flex justify-between items-center bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                        <span class="font-bold text-purple-400 text-xs uppercase">Danh Sách Link Hiện Tại</span>
-                        <button type="button" id="add-new-link-btn" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1 transition">
-                            <i class="fa-solid fa-plus"></i> Thêm Link Mới
-                        </button>
-                    </div>
+            <!-- Danh sách Link -->
+            <div class="link-list" id="link-container"></div>
 
-                    <!-- Dynamic Manageable Links List -->
-                    <div id="manage-links-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1"></div>
-                </div>
-
-                <!-- TAB 3: BACKGROUND & VIDEO -->
-                <div id="tab-content-background" class="tab-content space-y-3 hidden">
-                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 space-y-3">
-                        <h4 class="font-bold text-pink-400 text-xs uppercase tracking-wider">Tùy Chọn Hình Nền & Video Nền</h4>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Loại Nền (Background):</label>
-                            <select id="input-bg-type" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-pink-500">
-                                <option value="particles">Hiệu ứng Hạt Canvas Neon (Mặc định)</option>
-                                <option value="image">Hình Ảnh URL / Tải từ máy</option>
-                                <option value="youtube">Video YouTube Background</option>
-                                <option value="video">Video MP4 Direct URL / Tải video từ máy</option>
-                            </select>
-                        </div>
-
-                        <div id="bg-url-group">
-                            <label class="block text-slate-300 mb-1 font-medium" id="bg-url-label">Link Ảnh / Video Background:</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="input-bg-url" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-pink-500" placeholder="Nhập Link Ảnh, ID YouTube hoặc Link Video MP4...">
-                                <label id="upload-bg-file-label" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 cursor-pointer font-semibold shrink-0 flex items-center gap-1">
-                                    <i class="fa-solid fa-upload"></i> Tải Tệp
-                                    <input type="file" id="input-bg-file" accept="image/*,video/*" class="hidden">
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Presets -->
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Gợi ý mẫu Video Cyberpunk / Lo-Fi chất lượng cao:</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button type="button" class="preset-bg-btn px-2.5 py-1.5 bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-lg text-left truncate" data-type="youtube" data-url="jfKfPfyJRdk">
-                                    🎬 Cyberpunk City (YT)
-                                </button>
-                                <button type="button" class="preset-bg-btn px-2.5 py-1.5 bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-lg text-left truncate" data-type="youtube" data-url="L3wKzygi1ac">
-                                    🌃 Lofi Girl Room (YT)
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3 pt-1">
-                            <div>
-                                <label class="block text-slate-300 mb-1 font-medium">Độ tối lớp phủ (Overlay): <span id="overlay-val-text" class="text-pink-400">75%</span></label>
-                                <input type="range" id="input-overlay-opacity" min="0" max="100" value="75" class="w-full accent-pink-500">
-                            </div>
-                            <div>
-                                <label class="block text-slate-300 mb-1 font-medium">Độ mờ Kính (Blur): <span id="blur-val-text" class="text-pink-400">2px</span></label>
-                                <input type="range" id="input-bg-blur" min="0" max="20" value="2" class="w-full accent-pink-500">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: MUSIC -->
-                <div id="tab-content-music" class="tab-content space-y-3 hidden">
-                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 space-y-3">
-                        <h4 class="font-bold text-yellow-400 text-xs uppercase tracking-wider">Cài Đặt Nhạc Nền</h4>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Tên bài hát hiển thị:</label>
-                            <input type="text" id="input-song-title" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-yellow-500" placeholder="VD: Lofi Cyber Remix">
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Nguồn phát Nhạc (Direct MP3 URL / Upload Tệp / YouTube Link):</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="input-song-url" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-yellow-500" placeholder="Dán link file .mp3 hoặc link YouTube...">
-                                <label class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 cursor-pointer font-semibold shrink-0 flex items-center gap-1">
-                                    <i class="fa-solid fa-upload"></i> Tải MP3
-                                    <input type="file" id="input-song-file" accept="audio/*" class="hidden">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 5: DONATE -->
-                <div id="tab-content-donate" class="tab-content space-y-3 hidden">
-                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800 space-y-3">
-                        <h4 class="font-bold text-green-400 text-xs uppercase tracking-wider">Cấu Hình Ủng Hộ (Donate)</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-slate-300 mb-1 font-medium">Tên Ngân Hàng / Ví:</label>
-                                <input type="text" id="input-bank-name" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-green-500" placeholder="MB BANK">
-                            </div>
-                            <div>
-                                <label class="block text-slate-300 mb-1 font-medium">Số Tài Khoản:</label>
-                                <input type="text" id="input-bank-stk" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-green-500" placeholder="0987654321">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Tên Chủ Tài Khoản:</label>
-                            <input type="text" id="input-bank-owner" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-green-500" placeholder="PHUNG VAN CUONG">
-                        </div>
-                        <div>
-                            <label class="block text-slate-300 mb-1 font-medium">Ảnh Mã QR Tùy Chỉnh (Tải ảnh từ máy / Bỏ trống để dùng VietQR tự động):</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="input-qr-custom-url" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-green-500" placeholder="Link ảnh mã QR tùy chỉnh...">
-                                <label class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 cursor-pointer font-semibold shrink-0 flex items-center gap-1">
-                                    <i class="fa-solid fa-upload"></i> Tải Ảnh QR
-                                    <input type="file" id="input-qr-file" accept="image/*" class="hidden">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Submit & Backup Buttons Footer -->
-                <div class="pt-3 border-t border-slate-800 flex flex-wrap gap-2 justify-between items-center shrink-0">
-                    <div class="flex gap-1.5">
-                        <button type="button" id="export-json-btn" title="Xuất file cấu hình JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-lg border border-slate-700 transition">
-                            <i class="fa-solid fa-download"></i>
-                        </button>
-                        <label title="Nhập file cấu hình JSON" class="p-2 bg-slate-800 hover:bg-slate-700 text-purple-400 rounded-lg border border-slate-700 cursor-pointer transition">
-                            <i class="fa-solid fa-upload"></i>
-                            <input type="file" id="import-json-file" accept=".json" class="hidden">
-                        </label>
-                        <button type="button" id="reset-defaults-btn" class="px-3 py-2 bg-slate-800 hover:bg-red-950 text-slate-300 hover:text-red-300 font-semibold rounded-lg border border-slate-700 transition">
-                            Đặt Lại
-                        </button>
-                    </div>
-
-                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 hover:opacity-90 text-white font-bold rounded-xl shadow-lg transition">
-                        <i class="fa-solid fa-check mr-1"></i> Lưu Cài Đặt
-                    </button>
-                </div>
-            </form>
+            <!-- Nút Donate -->
+            <button class="donate-btn" id="open-donate-modal">
+                <i class="fa-solid fa-heart-pulse"></i> Ủng hộ / Donate
+            </button>
         </div>
     </div>
 
-    <!-- YouTube Iframe API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- Modal Cài đặt -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Cài Đặt Trang Bio</span>
+                <button class="close-modal" id="close-settings">&times;</button>
+            </div>
 
-    <script>
-        // Default System Data
-        const DEFAULT_DATA = {
-            name: "HMKEY (Phùng Văn Cường)",
-            bio: "Developer & Content Creator. Đam mê thiết kế giao diện Cyberpunk & Âm nhạc.",
-            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-            tags: ["Developer", "Gamer", "Cyberpunk"],
-            music: {
-                title: "Cyberpunk Lofi Chill",
-                url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"
-            },
-            bg: {
-                type: "particles", // 'particles', 'image', 'youtube', 'video'
-                url: "jfKfPfyJRdk",
-                overlayOpacity: 75,
-                blur: 2
-            },
-            bank: {
-                name: "MB BANK",
-                stk: "0987654321",
-                owner: "PHUNG VAN CUONG",
-                qrCustom: ""
-            },
+            <div class="settings-tabs">
+                <button class="tab-btn active" data-tab="tab-profile">Hồ sơ</button>
+                <button class="tab-btn" data-tab="tab-links">Links</button>
+                <button class="tab-btn" data-tab="tab-theme">Giao diện</button>
+                <button class="tab-btn" data-tab="tab-music">Nhạc</button>
+                <button class="tab-btn" data-tab="tab-donate">Donate</button>
+            </div>
+
+            <!-- Tab Hồ sơ -->
+            <div class="tab-pane active" id="tab-profile">
+                <div class="form-group">
+                    <label>Tên hiển thị</label>
+                    <input type="text" id="input-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Tiểu sử (Bio)</label>
+                    <textarea id="input-bio" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ảnh đại diện (URL hoặc tải lên)</label>
+                    <input type="text" id="input-avatar" class="form-control" placeholder="Dán link ảnh...">
+                    <input type="file" id="upload-avatar-file" class="form-control" accept="image/*" style="margin-top: 6px;">
+                </div>
+                <button class="btn-primary" id="save-profile-btn">Lưu Thay Đổi</button>
+            </div>
+
+            <!-- Tab Links -->
+            <div class="tab-pane" id="tab-links">
+                <div id="links-editor-list"></div>
+                <button class="btn-primary" id="add-link-btn" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px dashed var(--primary-color);">+ Thêm Link Mới</button>
+                <button class="btn-primary" id="save-links-btn" style="margin-top: 15px;">Lưu Danh Sách Link</button>
+            </div>
+
+            <!-- Tab Giao diện -->
+            <div class="tab-pane" id="tab-theme">
+                <div class="form-group">
+                    <label>Link Video Nền (MP4 trực tiếp)</label>
+                    <input type="text" id="input-video" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Màu Chủ Đạo (Accent Color)</label>
+                    <input type="color" id="input-color" class="form-control" style="height: 40px; padding: 2px;">
+                </div>
+                <button class="btn-primary" id="save-theme-btn">Lưu Giao Diện</button>
+            </div>
+
+            <!-- Tab Nhạc -->
+            <div class="tab-pane" id="tab-music">
+                <div class="form-group">
+                    <label>Tên Bài Hát</label>
+                    <input type="text" id="input-music-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Link File MP3 (Direct Audio Link)</label>
+                    <input type="text" id="input-music-url" class="form-control">
+                </div>
+                <button class="btn-primary" id="save-music-btn">Cập Nhật Nhạc</button>
+            </div>
+
+            <!-- Tab Donate -->
+            <div class="tab-pane" id="tab-donate">
+                <div class="form-group">
+                    <label>Tên Ngân Hàng</label>
+                    <input type="text" id="input-bank-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Số Tài Khoản</label>
+                    <input type="text" id="input-bank-stk" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Chủ Tài Khoản</label>
+                    <input type="text" id="input-bank-owner" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Ảnh QR Code (URL hoặc tải lên)</label>
+                    <input type="text" id="input-qr-url" class="form-control">
+                    <input type="file" id="upload-qr-file" class="form-control" accept="image/*" style="margin-top: 6px;">
+                </div>
+                <button class="btn-primary" id="save-donate-btn">Lưu Thông Tin Donate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Donate QR -->
+    <div class="modal" id="donate-modal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <span class="modal-title">Ủng Hộ / Donate</span>
+                <button class="close-modal" id="close-donate">&times;</button>
+            </div>
+            <img id="modal-qr-img" src="" alt="QR Code" class="qr-preview">
+            <div class="bank-info" id="modal-bank-info">Đang tải thông tin...</div>
+            <button class="btn-primary" id="copy-stk-btn">Sao Chép Số Tài Khoản</button>
+        </div>
+    </div>
+
+    <!-- Modal Đăng Nhập / Đăng Ký -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="auth-modal-title">Đăng Nhập Hệ Thống</span>
+                <button class="close-modal" id="close-auth">&times;</button>
+            </div>
+            
+            <div id="auth-form-container">
+                <div class="form-group" id="group-username">
+                    <label>Tên tài khoản (Username)</label>
+                    <input type="text" id="auth-username" class="form-control" placeholder="vd: cuong">
+                </div>
+                <div class="form-group">
+                    <label>Email xác minh</label>
+                    <input type="email" id="auth-email" class="form-control" placeholder="name@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" id="auth-password" class="form-control" placeholder="••••••••">
+                </div>
+                <button class="btn-primary" id="auth-submit-btn">Đăng Nhập</button>
+                
+                <div class="auth-switch" id="auth-switch-mode">
+                    Chưa có tài khoản? <span id="switch-to-signup">Đăng ký ngay</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-Placeholder-Key-Replace-With-Yours",
+            authDomain: "biolink-pro.firebaseapp.com",
+            projectId: "biolink-pro",
+            storageBucket: "biolink-pro.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123:web:abc"
+        };
+
+        let app, auth, db;
+        let isFirebaseConfigured = false;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            isFirebaseConfigured = true;
+        } catch (e) {
+            console.log("Sử dụng chế độ localStorage cục bộ.");
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileUser = urlParams.get('u') || 'default';
+
+        let siteData = {
+            name: "Phùng Văn Cường",
+            bio: "Developer & Creator | Cyberpunk Enthusiast 🚀",
+            avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop",
+            video: "https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-31910-large.mp4",
+            color: "#00f3ff",
+            musicName: "Cyberpunk Chill Mix",
+            musicUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            bankName: "MB Bank",
+            bankStk: "0123456789999",
+            bankOwner: "PHUNG VAN CUONG",
+            qrUrl: "https://api.vietqr.io/image/970422-0123456789999-compact2.jpg",
             links: [
-                { id: "1", title: "Facebook Trang Cá Nhân", url: "https://facebook.com", icon: "fa-brands fa-facebook-f", gradient: "from-blue-600 to-blue-800" },
-                { id: "2", title: "TikTok Official Channel", url: "https://tiktok.com", icon: "fa-brands fa-tiktok", gradient: "from-slate-800 to-slate-950" },
-                { id: "3", title: "Instagram Profile", url: "https://instagram.com", icon: "fa-brands fa-instagram", gradient: "from-pink-600 via-purple-600 to-orange-500" },
-                { id: "4", title: "YouTube Channel", url: "https://youtube.com", icon: "fa-brands fa-youtube", gradient: "from-red-600 to-red-800" },
-                { id: "5", title: "Discord Community", url: "https://discord.gg", icon: "fa-brands fa-discord", gradient: "from-indigo-600 to-indigo-800" },
-                { id: "6", title: "GitHub Lập Trình", url: "https://github.com", icon: "fa-brands fa-github", gradient: "from-slate-800 to-slate-900" }
+                { title: "Facebook cá nhân", url: "https://facebook.com", icon: "fa-brands fa-facebook" },
+                { title: "Kênh TikTok", url: "https://tiktok.com", icon: "fa-brands fa-tiktok" },
+                { title: "GitHub Code", url: "https://github.com", icon: "fa-brands fa-github" }
             ]
         };
 
-        // App States
-        let userData = JSON.parse(localStorage.getItem('user_bio_cyber_pro_data')) || DEFAULT_DATA;
-        let isPlaying = false;
-        let ytAudioPlayer = null;
-        let isYtAudio = false;
-
-        // DOM Element Caches
-        const profileAvatar = document.getElementById('profile-avatar');
-        const profileName = document.getElementById('profile-name');
-        const profileBio = document.getElementById('profile-bio');
-        const profileTags = document.getElementById('profile-tags');
-        const footerName = document.getElementById('footer-name');
-        const yearSpan = document.getElementById('year');
-
-        const bankNameDisplay = document.getElementById('bank-name-display');
-        const bankOwnerDisplay = document.getElementById('bank-owner-display');
-        const bankStkDisplay = document.getElementById('bank-stk-display');
-
-        const socialContainer = document.getElementById('social-links-container');
-        const audioPlayer = document.getElementById('audio-player');
-        const currentSongTitle = document.getElementById('current-song-title');
-        const vinylDisc = document.getElementById('vinyl-disc');
-        const musicBtnIcon = document.getElementById('music-btn-icon');
-        const musicIndicator = document.getElementById('music-indicator');
-
-        // Helper: Convert File to Base64 String
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // Extract YouTube Video ID
-        function extractYouTubeId(url) {
-            if (!url) return '';
-            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-            return match ? match[1] : url.trim();
-        }
-
-        function renderProfile() {
-            profileAvatar.src = userData.avatar || DEFAULT_DATA.avatar;
-            profileName.textContent = userData.name || DEFAULT_DATA.name;
-            profileBio.textContent = userData.bio || DEFAULT_DATA.bio;
-            footerName.textContent = userData.name ? userData.name.split(' ')[0] : "HMKEY";
-            currentSongTitle.textContent = userData.music.title || "Bio Music Track";
-
-            // Render Tags
-            profileTags.innerHTML = '';
-            if (userData.tags && userData.tags.length > 0) {
-                const colors = [
-                    'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-                    'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                    'bg-pink-500/10 text-pink-400 border-pink-500/20',
-                    'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
-                ];
-                userData.tags.forEach((tag, idx) => {
-                    if (tag.trim()) {
-                        const span = document.createElement('span');
-                        span.className = `px-3 py-1 rounded-full text-xs font-semibold border ${colors[idx % colors.length]}`;
-                        span.textContent = tag.trim();
-                        profileTags.appendChild(span);
-                    }
-                });
-            }
-
-            // Render Banking
-            bankNameDisplay.textContent = userData.bank.name || "MB BANK";
-            bankOwnerDisplay.textContent = userData.bank.owner || "PHUNG VAN CUONG";
-            bankStkDisplay.textContent = userData.bank.stk || "0987654321";
-
-            renderLinks();
-            applyBackgroundSettings();
-            setupAudioSource();
-        }
-
-        // Render Public Links List
-        function renderLinks() {
-            socialContainer.innerHTML = '';
-
-            if (!userData.links || userData.links.length === 0) {
-                socialContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-500">Chưa có liên kết nào. Bấm Cài Đặt để thêm!</div>`;
-                return;
-            }
-
-            userData.links.forEach(link => {
-                const a = document.createElement('a');
-                a.href = link.url || '#';
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                a.className = `group flex items-center justify-between p-3.5 rounded-xl glass-card border border-white/10 hover:scale-[1.02] hover:border-cyan-500/50 transition-all duration-300 shadow-md`;
-
-                const gradientClass = link.gradient || "from-slate-800 to-slate-900";
-                const iconClass = link.icon || "fa-solid fa-link";
-
-                a.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-base shadow-md group-hover:scale-110 transition-transform">
-                            <i class="${iconClass}"></i>
-                        </div>
-                        <span class="font-semibold text-xs sm:text-sm text-slate-200 group-hover:text-cyan-300 transition-colors">${link.title}</span>
-                    </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-all"></i>
-                `;
-                socialContainer.appendChild(a);
-            });
-        }
-
-        // Apply Background Settings (Video, MP4, YouTube, Image, Particles)
-        function applyBackgroundSettings() {
-            const videoHolder = document.getElementById('video-bg-holder');
-            const imageHolder = document.getElementById('image-bg-holder');
-            const particlesCanvas = document.getElementById('particles-canvas');
-            const bgOverlay = document.getElementById('bg-overlay');
-
-            videoHolder.classList.add('hidden');
-            imageHolder.classList.add('hidden');
-            particlesCanvas.classList.add('hidden');
-
-            const bgType = userData.bg.type || 'particles';
-            const opacity = (userData.bg.overlayOpacity !== undefined ? userData.bg.overlayOpacity : 75) / 100;
-            const blur = userData.bg.blur !== undefined ? userData.bg.blur : 2;
-
-            bgOverlay.style.backgroundColor = `rgba(3, 3, 10, ${opacity})`;
-            bgOverlay.style.backdropFilter = `blur(${blur}px)`;
-
-            if (bgType === 'image' && userData.bg.url) {
-                imageHolder.style.backgroundImage = `url('${userData.bg.url}')`;
-                imageHolder.classList.remove('hidden');
-            } else if (bgType === 'youtube' && userData.bg.url) {
-                const ytId = extractYouTubeId(userData.bg.url);
-                videoHolder.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${ytId}&showinfo=0&rel=0&enablejsapi=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                videoHolder.classList.remove('hidden');
-            } else if (bgType === 'video' && userData.bg.url) {
-                videoHolder.innerHTML = `<video autoplay loop muted playsinline src="${userData.bg.url}"></video>`;
-                videoHolder.classList.remove('hidden');
+        async function loadData() {
+            if (isFirebaseConfigured && profileUser !== 'default') {
+                try {
+                    const docRef = doc(db, "users", profileUser);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) siteData = docSnap.data();
+                } catch (err) { console.error(err); }
             } else {
-                particlesCanvas.classList.remove('hidden');
+                const local = localStorage.getItem('biolink_' + profileUser);
+                if (local) siteData = JSON.parse(local);
             }
+            renderUI();
         }
 
-        // Audio Handler
-        function setupAudioSource() {
-            const musicUrl = userData.music.url || '';
-            const ytId = extractYouTubeId(musicUrl);
-
-            if (ytId.length === 11 && !musicUrl.endsWith('.mp3')) {
-                isYtAudio = true;
-                audioPlayer.pause();
+        async function saveDataToDB() {
+            if (isFirebaseConfigured && auth.currentUser) {
+                await setDoc(doc(db, "users", profileUser), siteData);
             } else {
-                isYtAudio = false;
-                audioPlayer.src = musicUrl;
+                localStorage.setItem('biolink_' + profileUser, JSON.stringify(siteData));
             }
+            alert("Đã lưu thay đổi thành công!");
+            location.reload();
         }
 
-        function toggleMusic() {
-            if (isPlaying) pauseMusic();
-            else playMusic();
-        }
+        function renderUI() {
+            document.getElementById('profile-name').innerText = siteData.name;
+            document.getElementById('profile-bio').innerText = siteData.bio;
+            document.getElementById('profile-avatar').src = siteData.avatar;
+            document.getElementById('bg-video').src = siteData.video;
+            document.documentElement.style.setProperty('--primary-color', siteData.color);
 
-        function playMusic() {
-            isPlaying = true;
-            musicBtnIcon.className = "fa-solid fa-pause text-sm";
-            musicIndicator.classList.add('playing');
-
-            if (isYtAudio && ytAudioPlayer && typeof ytAudioPlayer.playVideo === 'function') {
-                ytAudioPlayer.playVideo();
-            } else if (!isYtAudio && audioPlayer.src) {
-                audioPlayer.play().catch(() => {
-                    showToast("Nhấp vào trang để tiếp tục phát nhạc!", "error");
-                    pauseMusic();
-                });
-            }
-        }
-
-        function pauseMusic() {
-            isPlaying = false;
-            musicBtnIcon.className = "fa-solid fa-music text-sm";
-            musicIndicator.classList.remove('playing');
-
-            if (isYtAudio && ytAudioPlayer && typeof ytAudioPlayer.pauseVideo === 'function') {
-                ytAudioPlayer.pauseVideo();
-            } else {
-                audioPlayer.pause();
-            }
-        }
-
-        // Toast Messages
-        function showToast(message, type = "success") {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const bgColor = type === "success" ? "bg-cyan-950/90 border-cyan-500/50 text-cyan-300" : "bg-red-950/90 border-red-500/50 text-red-300";
-            const icon = type === "success" ? "fa-circle-check text-cyan-400" : "fa-circle-exclamation text-red-400";
-
-            toast.className = `flex items-center gap-2.5 px-4 py-3 rounded-xl border backdrop-blur-md shadow-2xl text-xs font-semibold ${bgColor} transition-all duration-300 opacity-0 transform -translate-y-2 pointer-events-auto`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
-
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => toast.classList.remove('opacity-0', '-translate-y-2'), 10);
-            setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function copyToClipboard(text, msg) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast(msg);
-            } catch (err) {
-                showToast("Lỗi sao chép!", "error");
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // Modal Handlers
-        function openModal(id) {
-            const modal = document.getElementById(id);
-            const dialog = modal.firstElementChild;
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                dialog.classList.remove('scale-95');
-                dialog.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            const dialog = modal.firstElementChild;
-            modal.classList.add('opacity-0');
-            dialog.classList.remove('scale-100');
-            dialog.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function renderManageLinksList() {
-            const container = document.getElementById('manage-links-list');
+            const container = document.getElementById('link-container');
             container.innerHTML = '';
+            siteData.links.forEach(link => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.target = '_blank';
+                a.className = 'link-item';
+                a.innerHTML = `<div class="link-content"><i class="${link.icon || 'fa-solid fa-link'}"></i><span>${link.title}</span></div><i class="fa-solid fa-chevron-right" style="font-size: 12px; opacity: 0.6;"></i>`;
+                container.appendChild(a);
+            });
 
-            if (!userData.links || userData.links.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-center py-3">Bấm "Thêm Link Mới" để tạo liên kết đầu tiên.</p>`;
+            document.getElementById('music-title').innerText = siteData.musicName || "Không có nhạc";
+            const audio = document.getElementById('bg-audio');
+            if (siteData.musicUrl) audio.src = siteData.musicUrl;
+
+            document.getElementById('modal-qr-img').src = siteData.qrUrl;
+            document.getElementById('modal-bank-info').innerHTML = `<b>${siteData.bankName}</b><br>STK: <b>${siteData.bankStk}</b><br>Chủ TK: <b>${siteData.bankOwner}</b>`;
+        }
+
+        const audio = document.getElementById('bg-audio');
+        const vinyl = document.getElementById('vinyl-disc');
+        const musicToggleBtn = document.getElementById('music-toggle-btn');
+        let isPlaying = false;
+
+        function startMusic() {
+            if (siteData.musicUrl && !isPlaying) {
+                audio.play().then(() => {
+                    vinyl.classList.add('playing');
+                    musicToggleBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    isPlaying = true;
+                }).catch(() => {});
+            }
+        }
+
+        document.addEventListener('click', startMusic, { once: true });
+
+        musicToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!siteData.musicUrl) return alert("Chưa có link nhạc nền!");
+            if (isPlaying) {
+                audio.pause();
+                vinyl.classList.remove('playing');
+                musicToggleBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            } else {
+                audio.play();
+                vinyl.classList.add('playing');
+                musicToggleBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        document.getElementById('open-donate-modal').onclick = () => document.getElementById('donate-modal').classList.add('active');
+        document.getElementById('close-donate').onclick = () => document.getElementById('donate-modal').classList.remove('active');
+        document.getElementById('copy-stk-btn').onclick = () => {
+            navigator.clipboard.writeText(siteData.bankStk);
+            alert("Đã sao chép số tài khoản!");
+        };
+
+        const settingsBtn = document.getElementById('settings-btn');
+        const authBtn = document.getElementById('auth-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const authModal = document.getElementById('auth-modal');
+
+        let isLoginMode = true;
+
+        authBtn.onclick = () => {
+            if (isFirebaseConfigured && auth.currentUser) {
+                if (confirm("Bạn có muốn đăng xuất tài khoản?")) {
+                    signOut(auth).then(() => location.reload());
+                }
+            } else {
+                authModal.classList.add('active');
+            }
+        };
+
+        document.getElementById('close-settings').onclick = () => settingsModal.classList.remove('active');
+        document.getElementById('close-auth').onclick = () => authModal.classList.remove('active');
+        settingsBtn.onclick = () => settingsModal.classList.add('active');
+
+        document.getElementById('switch-to-signup').onclick = function() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-modal-title').innerText = isLoginMode ? "Đăng Nhập Hệ Thống" : "Đăng Ký Tài Khoản Mới";
+            document.getElementById('auth-submit-btn').innerText = isLoginMode ? "Đăng Nhập" : "Đăng Ký";
+            document.getElementById('auth-switch-mode').innerHTML = isLoginMode ? 
+                'Chưa có tài khoản? <span id="switch-to-signup">Đăng ký ngay</span>' : 
+                'Đã có tài khoản? <span id="switch-to-signup">Đăng nhập</span>';
+            document.getElementById('switch-to-signup').onclick = arguments.callee;
+        };
+
+        document.getElementById('auth-submit-btn').onclick = async () => {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const username = document.getElementById('auth-username').value;
+
+            if (!isFirebaseConfigured) {
+                alert("Hệ thống Cục bộ: Đã bật quyền quản trị cho trình duyệt này!");
+                settingsBtn.classList.remove('hidden');
+                authModal.classList.remove('active');
                 return;
             }
 
-            userData.links.forEach((link, index) => {
-                const card = document.createElement('div');
-                card.className = "bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2 relative";
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="font-bold text-cyan-400">Link #${index + 1}</span>
-                        <button type="button" class="delete-link-btn text-red-400 hover:text-red-300 p-1" data-index="${index}">
-                            <i class="fa-solid fa-trash-can"></i> Xóa
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-slate-400 mb-0.5">Tiêu đề:</label>
-                            <input type="text" value="${link.title || ''}" class="link-title-input w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200" data-index="${index}">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-slate-400 mb-0.5">Icon (FontAwesome Class):</label>
-                            <input type="text" value="${link.icon || 'fa-solid fa-link'}" class="link-icon-input w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200" data-index="${index}">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-slate-400 mb-0.5">Đường dẫn (URL):</label>
-                        <input type="url" value="${link.url || ''}" class="link-url-input w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-slate-200" data-index="${index}">
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            // Bind delete button events
-            container.querySelectorAll('.delete-link-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const idx = parseInt(e.currentTarget.getAttribute('data-index'));
-                    userData.links.splice(idx, 1);
-                    renderManageLinksList();
-                });
-            });
-        }
-
-        function setupEventListeners() {
-            yearSpan.textContent = new Date().getFullYear();
-
-            // Toggle Music
-            document.getElementById('toggle-music-btn').addEventListener('click', toggleMusic);
-
-            // Share Page URL
-            document.getElementById('share-btn').addEventListener('click', () => {
-                copyToClipboard(window.location.href, "Đã sao chép liên kết trang cá nhân!");
-            });
-
-            // Copy STK Button
-            document.getElementById('copy-stk-btn').addEventListener('click', () => {
-                copyToClipboard(userData.bank.stk, "Đã sao chép Số Tài Khoản!");
-            });
-
-            // Open Donate Modal
-            document.getElementById('open-donate-modal').addEventListener('click', () => {
-                document.getElementById('modal-bank-name').textContent = userData.bank.name;
-                document.getElementById('modal-bank-owner').textContent = userData.bank.owner;
-                document.getElementById('modal-bank-stk').textContent = userData.bank.stk;
-
-                if (userData.bank.qrCustom) {
-                    document.getElementById('qr-code-img').src = userData.bank.qrCustom;
-                } else {
-                    const cleanOwner = encodeURIComponent(userData.bank.owner || '');
-                    const cleanStk = userData.bank.stk || '';
-                    document.getElementById('qr-code-img').src = `https://api.vietqr.io/image/970422-${cleanStk}-compact2.jpg?accountName=${cleanOwner}`;
-                }
-
-                openModal('donate-modal');
-            });
-
-            document.getElementById('close-donate-modal').addEventListener('click', () => closeModal('donate-modal'));
-            document.getElementById('modal-copy-stk').addEventListener('click', () => {
-                copyToClipboard(userData.bank.stk, "Đã sao chép Số Tài Khoản!");
-            });
-
-            // Settings Modal & Tabs
-            const settingsModal = document.getElementById('settings-modal');
-            document.getElementById('open-settings-btn').addEventListener('click', () => {
-                // Populate Profile
-                document.getElementById('input-name').value = userData.name || '';
-                document.getElementById('input-bio').value = userData.bio || '';
-                document.getElementById('input-avatar-url').value = userData.avatar || '';
-                document.getElementById('input-tags').value = userData.tags ? userData.tags.join(', ') : '';
-
-                // Populate Background
-                document.getElementById('input-bg-type').value = userData.bg.type || 'particles';
-                document.getElementById('input-bg-url').value = userData.bg.url || '';
-                document.getElementById('input-overlay-opacity').value = userData.bg.overlayOpacity !== undefined ? userData.bg.overlayOpacity : 75;
-                document.getElementById('input-bg-blur').value = userData.bg.blur !== undefined ? userData.bg.blur : 2;
-                document.getElementById('overlay-val-text').textContent = (userData.bg.overlayOpacity || 75) + '%';
-                document.getElementById('blur-val-text').textContent = (userData.bg.blur || 2) + 'px';
-
-                // Populate Music
-                document.getElementById('input-song-title').value = userData.music.title || '';
-                document.getElementById('input-song-url').value = userData.music.url || '';
-
-                // Populate Donate
-                document.getElementById('input-bank-name').value = userData.bank.name || '';
-                document.getElementById('input-bank-stk').value = userData.bank.stk || '';
-                document.getElementById('input-bank-owner').value = userData.bank.owner || '';
-                document.getElementById('input-qr-custom-url').value = userData.bank.qrCustom || '';
-
-                renderManageLinksList();
-                openModal('settings-modal');
-            });
-
-            document.getElementById('close-settings-modal').addEventListener('click', () => closeModal('settings-modal'));
-
-            // Tab Switching Logic
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const targetTab = btn.getAttribute('data-tab');
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    tabContents.forEach(c => {
-                        if (c.id === `tab-content-${targetTab}`) c.classList.remove('hidden');
-                        else c.classList.add('hidden');
-                    });
-                });
-            });
-
-            // Range Sliders Text Update
-            document.getElementById('input-overlay-opacity').addEventListener('input', (e) => {
-                document.getElementById('overlay-val-text').textContent = e.target.value + '%';
-            });
-            document.getElementById('input-bg-blur').addEventListener('input', (e) => {
-                document.getElementById('blur-val-text').textContent = e.target.value + 'px';
-            });
-
-            // File Upload Inputs Handling
-            document.getElementById('input-avatar-file').addEventListener('change', async (e) => {
-                if (e.target.files[0]) {
-                    const base64 = await fileToBase64(e.target.files[0]);
-                    document.getElementById('input-avatar-url').value = base64;
-                    showToast("Đã tải ảnh Avatar!");
-                }
-            });
-
-            document.getElementById('input-bg-file').addEventListener('change', async (e) => {
-                if (e.target.files[0]) {
-                    const base64 = await fileToBase64(e.target.files[0]);
-                    document.getElementById('input-bg-url').value = base64;
-                    showToast("Đã tải tệp Nền!");
-                }
-            });
-
-            document.getElementById('input-song-file').addEventListener('change', async (e) => {
-                if (e.target.files[0]) {
-                    const base64 = await fileToBase64(e.target.files[0]);
-                    document.getElementById('input-song-url').value = base64;
-                    showToast("Đã tải tệp Nhạc MP3!");
-                }
-            });
-
-            document.getElementById('input-qr-file').addEventListener('change', async (e) => {
-                if (e.target.files[0]) {
-                    const base64 = await fileToBase64(e.target.files[0]);
-                    document.getElementById('input-qr-custom-url').value = base64;
-                    showToast("Đã tải ảnh QR!");
-                }
-            });
-
-            // Preset Background Buttons
-            document.querySelectorAll('.preset-bg-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.getElementById('input-bg-type').value = btn.getAttribute('data-type');
-                    document.getElementById('input-bg-url').value = btn.getAttribute('data-url');
-                    showToast("Đã chọn mẫu background!");
-                });
-            });
-
-            // Add New Link Event
-            document.getElementById('add-new-link-btn').addEventListener('click', () => {
-                if (!userData.links) userData.links = [];
-                userData.links.push({
-                    id: Date.now().toString(),
-                    title: "Trang Web Mới",
-                    url: "https://",
-                    icon: "fa-solid fa-globe",
-                    gradient: "from-cyan-600 to-purple-800"
-                });
-                renderManageLinksList();
-            });
-
-            // Save Settings Submit Form
-            document.getElementById('settings-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                // Read Link inputs
-                const titles = document.querySelectorAll('.link-title-input');
-                const icons = document.querySelectorAll('.link-icon-input');
-                const urls = document.querySelectorAll('.link-url-input');
-
-                const updatedLinks = [];
-                titles.forEach((el, index) => {
-                    updatedLinks.push({
-                        id: userData.links[index] ? userData.links[index].id : Date.now().toString(),
-                        title: el.value,
-                        icon: icons[index].value,
-                        url: urls[index].value,
-                        gradient: userData.links[index] ? userData.links[index].gradient : "from-slate-800 to-slate-900"
-                    });
-                });
-
-                const tagsVal = document.getElementById('input-tags').value;
-                const tagArray = tagsVal.split(',').map(t => t.trim()).filter(t => t.length > 0);
-
-                userData = {
-                    name: document.getElementById('input-name').value,
-                    bio: document.getElementById('input-bio').value,
-                    avatar: document.getElementById('input-avatar-url').value,
-                    tags: tagArray,
-                    music: {
-                        title: document.getElementById('input-song-title').value,
-                        url: document.getElementById('input-song-url').value
-                    },
-                    bg: {
-                        type: document.getElementById('input-bg-type').value,
-                        url: document.getElementById('input-bg-url').value,
-                        overlayOpacity: parseInt(document.getElementById('input-overlay-opacity').value),
-                        blur: parseInt(document.getElementById('input-bg-blur').value)
-                    },
-                    bank: {
-                        name: document.getElementById('input-bank-name').value,
-                        stk: document.getElementById('input-bank-stk').value,
-                        owner: document.getElementById('input-bank-owner').value,
-                        qrCustom: document.getElementById('input-qr-custom-url').value
-                    },
-                    links: updatedLinks
-                };
-
-                localStorage.setItem('user_bio_cyber_pro_data', JSON.stringify(userData));
-                renderProfile();
-                closeModal('settings-modal');
-                showToast("Đã lưu toàn bộ cài đặt!");
-            });
-
-            // Export Data JSON
-            document.getElementById('export-json-btn').addEventListener('click', () => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `bio_config_${Date.now()}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-                showToast("Đã xuất file cấu hình!");
-            });
-
-            // Import Data JSON
-            document.getElementById('import-json-file').addEventListener('change', (e) => {
-                if (e.target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            userData = JSON.parse(event.target.result);
-                            localStorage.setItem('user_bio_cyber_pro_data', JSON.stringify(userData));
-                            renderProfile();
-                            closeModal('settings-modal');
-                            showToast("Khôi phục cấu hình thành công!");
-                        } catch (err) {
-                            showToast("File JSON không hợp lệ!", "error");
-                        }
-                    };
-                    reader.readAsText(e.target.files[0]);
-                }
-            });
-
-            // Reset Defaults Button
-            document.getElementById('reset-defaults-btn').addEventListener('click', () => {
-                if (confirm("Khôi phục thông tin về mặc định ban đầu?")) {
-                    localStorage.removeItem('user_bio_cyber_pro_data');
-                    userData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                    renderProfile();
-                    closeModal('settings-modal');
-                    showToast("Đã khôi phục cài đặt mặc định!");
-                }
-            });
-        }
-
-        function initCanvasParticles() {
-            const canvas = document.getElementById('particles-canvas');
-            const ctx = canvas.getContext('2d');
-
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
-
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
-
-            const particles = [];
-            const particleCount = Math.min(Math.floor(width / 12), 60);
-
-            class Particle {
-                constructor() { this.reset(); }
-                reset() {
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                    this.size = Math.random() * 2 + 0.5;
-                    this.vx = (Math.random() - 0.5) * 0.4;
-                    this.vy = (Math.random() - 0.5) * 0.4;
-                    this.alpha = Math.random() * 0.5 + 0.2;
-                    this.color = Math.random() > 0.5 ? '#00f0ff' : '#ff007f';
-                }
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
-                }
-                draw() {
-                    ctx.save();
-                    ctx.globalAlpha = this.alpha;
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
-
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                for (let i = 0; i < particles.length; i++) {
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const dx = particles[i].x - particles[j].x;
-                        const dy = particles[i].y - particles[j].y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 110) {
-                            ctx.save();
-                            ctx.globalAlpha = (1 - dist / 110) * 0.12;
-                            ctx.strokeStyle = particles[i].color;
-                            ctx.lineWidth = 0.5;
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.stroke();
-                            ctx.restore();
-                        }
+            try {
+                if (isLoginMode) {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    if (!userCredential.user.emailVerified) {
+                        alert("Tài khoản chưa xác minh! Vui lòng kiểm tra Gmail.");
+                        await signOut(auth);
+                        return;
                     }
+                    alert("Đăng nhập thành công!");
+                    location.href = `?u=${username}`;
+                } else {
+                    if (!username) return alert("Vui lòng nhập Username!");
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    await sendEmailVerification(userCredential.user);
+                    alert("Đăng ký thành công! Link xác minh đã được gửi tới Gmail.");
+                    authModal.classList.remove('active');
                 }
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animate);
+            } catch (err) {
+                alert("Lỗi: " + err.message);
             }
-            animate();
+        };
+
+        if (isFirebaseConfigured) {
+            onAuthStateChanged(auth, (user) => {
+                if (user && user.emailVerified) {
+                    settingsBtn.classList.remove('hidden');
+                    authBtn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i>';
+                    authBtn.title = "Đăng xuất";
+                } else {
+                    settingsBtn.classList.add('hidden');
+                }
+            });
         }
 
-        // Window Load Initialization
-        window.onload = function() {
-            renderProfile();
-            setupEventListeners();
-            initCanvasParticles();
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            };
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            document.getElementById('input-name').value = siteData.name;
+            document.getElementById('input-bio').value = siteData.bio;
+            document.getElementById('input-avatar').value = siteData.avatar;
+            document.getElementById('input-video').value = siteData.video;
+            document.getElementById('input-color').value = siteData.color;
+            document.getElementById('input-music-name').value = siteData.musicName;
+            document.getElementById('input-music-url').value = siteData.musicUrl;
+            document.getElementById('input-bank-name').value = siteData.bankName;
+            document.getElementById('input-bank-stk').value = siteData.bankStk;
+            document.getElementById('input-bank-owner').value = siteData.bankOwner;
+            document.getElementById('input-qr-url').value = siteData.qrUrl;
+
+            const linksEditor = document.getElementById('links-editor-list');
+            linksEditor.innerHTML = '';
+            siteData.links.forEach(l => {
+                const div = document.createElement('div');
+                div.style.cssText = "display: flex; gap: 8px; margin-bottom: 10px; align-items: center;";
+                div.innerHTML = `
+                    <input type="text" class="form-control l-title" value="${l.title}" placeholder="Tên nút" style="flex: 1;">
+                    <input type="text" class="form-control l-url" value="${l.url}" placeholder="URL Link" style="flex: 1.5;">
+                    <input type="text" class="form-control l-icon" value="${l.icon || ''}" placeholder="Icon..." style="flex: 1;">
+                    <button class="btn-danger" onclick="this.parentElement.remove()">Xóa</button>
+                `;
+                linksEditor.appendChild(div);
+            });
+        });
+
+        document.getElementById('add-link-btn').onclick = () => {
+            const linksEditor = document.getElementById('links-editor-list');
+            const div = document.createElement('div');
+            div.style.cssText = "display: flex; gap: 8px; margin-bottom: 10px; align-items: center;";
+            div.innerHTML = `
+                <input type="text" class="form-control l-title" placeholder="Tên nút" style="flex: 1;">
+                <input type="text" class="form-control l-url" placeholder="URL Link" style="flex: 1.5;">
+                <input type="text" class="form-control l-icon" value="fa-solid fa-link" placeholder="Icon..." style="flex: 1;">
+                <button class="btn-danger" onclick="this.parentElement.remove()">Xóa</button>
+            `;
+            linksEditor.appendChild(div);
         };
+
+        document.getElementById('save-profile-btn').onclick = () => {
+            siteData.name = document.getElementById('input-name').value;
+            siteData.bio = document.getElementById('input-bio').value;
+            siteData.avatar = document.getElementById('input-avatar').value;
+            saveDataToDB();
+        };
+
+        document.getElementById('upload-avatar-file').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    siteData.avatar = event.target.result;
+                    document.getElementById('input-avatar').value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('save-links-btn').onclick = () => {
+            const rows = document.querySelectorAll('#links-editor-list > div');
+            const newLinks = [];
+            rows.forEach(r => {
+                const title = r.querySelector('.l-title').value;
+                const url = r.querySelector('.l-url').value;
+                const icon = r.querySelector('.l-icon').value;
+                if (title && url) newLinks.push({ title, url, icon });
+            });
+            siteData.links = newLinks;
+            saveDataToDB();
+        };
+
+        document.getElementById('save-theme-btn').onclick = () => {
+            siteData.video = document.getElementById('input-video').value;
+            siteData.color = document.getElementById('input-color').value;
+            saveDataToDB();
+        };
+
+        document.getElementById('save-music-btn').onclick = () => {
+            siteData.musicName = document.getElementById('input-music-name').value;
+            siteData.musicUrl = document.getElementById('input-music-url').value;
+            saveDataToDB();
+        };
+
+        document.getElementById('upload-qr-file').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    siteData.qrUrl = event.target.result;
+                    document.getElementById('input-qr-url').value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('save-donate-btn').onclick = () => {
+            siteData.bankName = document.getElementById('input-bank-name').value;
+            siteData.bankStk = document.getElementById('input-bank-stk').value;
+            siteData.bankOwner = document.getElementById('input-bank-owner').value;
+            siteData.qrUrl = document.getElementById('input-qr-url').value;
+            saveDataToDB();
+        };
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.onresize = resizeCanvas;
+        resizeCanvas();
+
+        for (let i = 0; i < 35; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 1,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 243, 255, 0.5)';
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+
+        loadData();
     </script>
 </body>
 </html>
